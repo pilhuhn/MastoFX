@@ -1,22 +1,9 @@
-/*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates
- * and other contributors as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package de.bsd.mastofx;
 
+import com.sys1yagi.mastodon4j.MastodonRequest;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -115,4 +102,24 @@ public class TootDetailView {
 
   }
 
+  public void boost(ActionEvent actionEvent) {
+    Statuses st = new Statuses(MastoMain.getMastodonClient());
+    try {
+      MastodonRequest<Status> req = st.postReblog(status.getId());
+      req.execute();
+    } catch (Mastodon4jRequestException e) {
+      e.printStackTrace();  // TODO: Customise this generated block
+    }
+  }
+
+  public void fav(ActionEvent actionEvent) {
+    Statuses st = new Statuses(MastoMain.getMastodonClient());
+    try {
+      MastodonRequest<Status> req = st.postFavourite(status.getId());
+      req.execute();
+    } catch (Mastodon4jRequestException e) {
+      e.printStackTrace();  // TODO: Customise this generated block
+    }
+
+  }
 }

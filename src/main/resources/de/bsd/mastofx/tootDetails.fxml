@@ -30,11 +30,13 @@
                   <Insets bottom="5.0" left="2.0" right="2.0" top="2.0" />
                </VBox.margin>
                <children>
-                  <WebView fx:id="webView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <WebView fx:id="webView" minHeight="120.0" prefHeight="240.0" prefWidth="431.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
             </GridPane>
             <ToolBar prefHeight="33.0" prefWidth="578.0">
               <items>
+                  <Button mnemonicParsing="false" onAction="#boost" text="Boost" />
+                  <Button mnemonicParsing="false" onAction="#fav" text="Fav" />
                 <Button mnemonicParsing="false" onAction="#reply" text="Reply" />
               </items>
             </ToolBar>
