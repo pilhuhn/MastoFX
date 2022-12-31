@@ -1,19 +1,20 @@
 package de.bsd.mastofx;
 
-import com.sys1yagi.mastodon4j.MastodonRequest;
-import com.sys1yagi.mastodon4j.api.entity.Status;
-import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
-import com.sys1yagi.mastodon4j.api.method.Statuses;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
+import social.bigbone.MastodonRequest;
+import social.bigbone.api.entity.Status;
+import social.bigbone.api.exception.BigboneRequestException;
+import social.bigbone.api.method.Statuses;
 
 /**
  * @author hrupp
@@ -24,6 +25,10 @@ public class TootDetailView {
   @FXML
   public WebView webView;
   @FXML
+  public Button boostButton;
+  @FXML
+  public Button favButton;
+  @FXML
   GridPane theGrid;
 
 
@@ -33,7 +38,7 @@ public class TootDetailView {
     System.out.println(actionEvent);
     ParentAndController tac  = null;
     try {
-      tac = MastoMain.loadFxmlFile("toot-box");
+      tac = MastoMain.loadFxmlFile("newToot.fxml");
     } catch (IOException e) {
       e.printStackTrace();  // TODO: Customise this generated block
       return;
@@ -41,10 +46,20 @@ public class TootDetailView {
 
     Stage stage = new Stage();
     Scene sc = new Scene(tac.parent, 500, 300);
+    sc.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
     stage.setScene(sc);
 
-    ((NewTootView)tac.controller).setInReplyTo(status.getId());
+    NewTootView controller = (NewTootView) tac.controller;
+    controller.setInReplyToId(status.getId());
+    String replyToAccount = "@" + status.getAccount().getAcct();
+    if (status.getReblog() != null) {
+      replyToAccount += " @" + status.getReblog().getAccount().getAcct();
+    }
+    if (!replyToAccount.endsWith(" ")) {
+      replyToAccount += " ";
+    }
+    controller.setInReplyToAccount(replyToAccount);
 
     stage.show();
 
@@ -68,7 +83,7 @@ public class TootDetailView {
     sb.append(status.getAccount().getDisplayName());
 
     var reblogged = status.getReblog();
-    if (reblogged != null) { // isReblogged() is not reliable
+    if (reblogged != null) { // isReblogged() is true on the article that is reblogged only
 
       sb.append("=> from ").append(reblogged.getAccount().getDisplayName());
     }
@@ -78,17 +93,8 @@ public class TootDetailView {
     label = new Label("Text");
     theGrid.add(label, 0, 2);
 
+    setFavButtonState(status);
 
-///*
-//    TextArea ta = new TextArea();
-//    ta.setWrapText(true);
-//    if (reblogged != null) {
-//      ta.setText(reblogged.getContent());
-//    } else {
-//      ta.setText(status.getContent());
-//    }
-//    theGrid.add(ta, 1, 2);
-//*/
 
     var engine = webView.getEngine();
     String t ;
@@ -102,12 +108,20 @@ public class TootDetailView {
 
   }
 
+  private void setFavButtonState(Status status) {
+    if (status.isFavourited()) {
+      favButton.setText("Fav'd");
+    } else {
+      favButton.setText("Fav");
+    }
+  }
+
   public void boost(ActionEvent actionEvent) {
     Statuses st = new Statuses(MastoMain.getMastodonClient());
     try {
       MastodonRequest<Status> req = st.postReblog(status.getId());
       req.execute();
-    } catch (Mastodon4jRequestException e) {
+    } catch (BigboneRequestException e) {
       e.printStackTrace();  // TODO: Customise this generated block
     }
   }
@@ -115,11 +129,60 @@ public class TootDetailView {
   public void fav(ActionEvent actionEvent) {
     Statuses st = new Statuses(MastoMain.getMastodonClient());
     try {
-      MastodonRequest<Status> req = st.postFavourite(status.getId());
-      req.execute();
-    } catch (Mastodon4jRequestException e) {
+
+      Status toBeFavD = status;
+      if (status.getReblog() != null) {
+        toBeFavD = status.getReblog();
+      }
+
+      MastodonRequest<Status> req;
+      if (toBeFavD.isFavourited()) {
+        req = st.postUnfavourite(toBeFavD.getId());
+      } else {
+        req = st.postFavourite(toBeFavD.getId());
+      }
+      Status res = req.execute();
+      setFavButtonState(res);
+
+    } catch (BigboneRequestException e) {
       e.printStackTrace();  // TODO: Customise this generated block
     }
 
+  }
+
+  public void raw(ActionEvent actionEvent) {
+    System.out.print("=== raw for ");
+    System.out.println(status.getId());
+    System.out.printf("Account %s , ( %s ),  %d \n" , status.getAccount().getAcct(),
+                      status.getAccount().getDisplayName(), status.getAccount().getId());
+    System.out.println(status.getCreatedAt());
+    if (status.getReblog() != null) {
+      var re = status.getReblog();
+      System.out.println("  --  reblogged from id " + re.getId());
+      System.out.printf("      Account %s , ( %s ),  %d \n" , re.getAccount().getAcct(),
+                        re.getAccount().getDisplayName(), re.getAccount().getId());
+      System.out.println("      " + re.getUri());
+      re.getEmojis().forEach(x2 -> System.out.println("      " + x2));
+      re.getMediaAttachments().forEach(x1 -> System.out.printf("      %d %s %s %s %s \n", x1.getId(), x1.getType(),
+                                                                       x1.getPreviewUrl(), x1.getTextUrl(), x1.getRemoteUrl()));
+      re.getMentions().forEach(x -> System.out.println("      " + x.getUsername()));
+      re.getTags().forEach(x -> System.out.println("      " + x.getName()));
+      System.out.println("Reblogged flag: " + re.isReblogged());
+      System.out.println(" --");
+    }
+    else {
+      System.out.println("  not reblogged");
+    }
+    System.out.println("Reblogged flag: " + status.isReblogged());
+    System.out.println(status.getUri());
+    if (status.getInReplyToId() != null ) {
+      System.out.println("  -- in reply to " + status.getInReplyToId());
+      System.out.println(status.getInReplyToAccountId());
+    }
+    status.getEmojis().forEach(x2 -> System.out.println("      " + x2));
+    status.getMediaAttachments().forEach(x1 -> System.out.printf("%d %s %s %s %s \n", x1.getId(), x1.getType(),
+                                                                 x1.getPreviewUrl(), x1.getTextUrl(), x1.getRemoteUrl()));
+    status.getMentions().forEach(x -> System.out.println(x.getUsername()));
+    status.getTags().forEach(x -> System.out.println(x.getName()));
   }
 }

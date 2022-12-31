@@ -4,7 +4,6 @@ package de.bsd.mastofx;
 import static java.lang.System.exit;
 
 import com.google.gson.Gson;
-import com.sys1yagi.mastodon4j.MastodonClient;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -17,6 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import okhttp3.OkHttpClient;
+import org.kordamp.bootstrapfx.BootstrapFX;
+import social.bigbone.MastodonClient;
 
 /**
  * @author hrupp
@@ -36,7 +37,7 @@ public class MastoMain extends Application {
     loadPropertiesFromFile();
 
     String mastodonServer = properties.getProperty("server");
-    MastodonClient client = new MastodonClient.Builder(mastodonServer, new OkHttpClient.Builder(), new Gson())
+    MastodonClient client = new MastodonClient.Builder(mastodonServer)
       .accessToken(properties.getProperty("token"))
       .build();
     MastoMain.client = client;
@@ -66,7 +67,8 @@ public class MastoMain extends Application {
 
     var root = pac.parent;
 
-    scene = new Scene(root, 550, 275);
+    scene = new Scene(root, 650, 375);
+    scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
     stage.setTitle("MastoFX");
     stage.setScene(scene);
@@ -80,7 +82,9 @@ public class MastoMain extends Application {
     if (!baseName.endsWith(".fxml")) {
       baseName = baseName + ".fxml";
     }
+    System.out.print("Trying to load " + baseName );
     URL resource = MastoMain.class.getResource(baseName);
+    System.out.println(" with resource " + (resource != null ? resource.toExternalForm() : " - not found -"));
     var loader = new FXMLLoader(resource);
     Parent root = loader.load();
     if (root == null) {

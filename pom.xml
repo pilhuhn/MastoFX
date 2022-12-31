@@ -16,21 +16,26 @@
 
 
   <dependencies>
+<!--
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10</version>
     </dependency>
+-->
     <dependency>
-      <groupId>com.github.sys1yagi.mastodon4j</groupId>
-      <artifactId>mastodon4j</artifactId>
-      <version>1.7.0</version>
+      <!-- maintained fork of mastodon4j -->
+      <groupId>social.bigbone</groupId>
+      <artifactId>bigbone</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
+<!--
       <exclusions>
         <exclusion>
           <groupId>com.google.code.gson</groupId>
           <artifactId>gson</artifactId>
         </exclusion>
       </exclusions>
+-->
     </dependency>
 
     <dependency>
@@ -52,6 +57,18 @@
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-web</artifactId>
       <version>${javafx.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kordamp.bootstrapfx</groupId>
+      <artifactId>bootstrapfx-core</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.15.3</version>
     </dependency>
   </dependencies>
 
@@ -84,6 +101,12 @@
       <id>jitpack</id>
       <url>https://jitpack.io</url>
       <releases/>
+      <snapshots/>
+    </repository>
+    <repository>
+      <!-- for Bigbone -->
+      <id>central-snapshots</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
       <snapshots/>
     </repository>
   </repositories>

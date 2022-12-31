@@ -1,14 +1,12 @@
 
 package de.bsd.mastofx;
 
-import com.sys1yagi.mastodon4j.api.Pageable;
-import com.sys1yagi.mastodon4j.api.entity.Status;
-import com.sys1yagi.mastodon4j.api.method.Timelines;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -18,6 +16,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.kordamp.bootstrapfx.BootstrapFX;
+import social.bigbone.api.Pageable;
+import social.bigbone.api.entity.Notification;
+import social.bigbone.api.entity.Status;
+import social.bigbone.api.method.Notifications;
+import social.bigbone.api.method.Timelines;
 
 /**
  * @author hrupp
@@ -25,11 +29,8 @@ import javafx.util.Callback;
 public class MainView {
 
   @FXML
-  public ListView<Status> tootListView;
+  public ListView tootListView;
 
-  public MainView() {
-
-  }
 
   public void showList() {
     List<Status> itemList = getStatusesForTimeline();
@@ -39,7 +40,7 @@ public class MainView {
     if (tootListView != null) {
       tootListView.setItems(items);
       tootListView.setCellFactory(param -> {
-        var cell =  new StatusTextFieldListCell();
+        var cell =  new MainListItemCell();
         cell.setOnMouseClicked((evt) -> {
           Status item = cell.getItem();
           System.out.println(item.getId());
@@ -75,18 +76,48 @@ public class MainView {
 
   }
 
-  class StatusTextFieldListCell extends TextFieldListCell<Status> {
-    public StatusTextFieldListCell() {
-      super(new StatusStringConverter());
+  public void showNotifications(ActionEvent actionEvent) {
+    List<Notification> itemList = getNotifications();
+
+    ObservableList<Notification> items = FXCollections.observableList(itemList);
+
+    if (tootListView != null) {
+      tootListView.getItems().clear();
+      tootListView.setItems(items);
+      tootListView.setCellFactory(param -> {
+        var cell =  new NotificationTextFieldListCell();
+        cell.setOnMouseClicked((evt) -> {
+          Notification item = cell.getItem();
+          System.out.println(item.getId());
+          // showStatusDetail(item);
+
+        });
+
+        return cell;
+      });
+
+    }
+
+  }
+
+  public void exit(ActionEvent actionEvent) {
+    System.exit(0);
+  }
+
+
+  class NotificationTextFieldListCell extends TextFieldListCell<Notification> {
+    public NotificationTextFieldListCell() {
+      super(new NotificationStringConverter());
     }
   }
 
   @FXML
   public void newToot(Event event) throws IOException {
-    Parent tootBox = MastoMain.loadFxmlFile("toot-box").parent;
+    Parent tootBox = MastoMain.loadFxmlFile("newToot").parent;
 
     Stage stage = new Stage();
     Scene sc = new Scene(tootBox, 500,300);
+    sc.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
     stage.setScene(sc);
     stage.show();
@@ -101,6 +132,19 @@ public class MainView {
       Pageable<Status> statuses = timelines.getHome().execute();
 
       return statuses.getPart();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  List<Notification> getNotifications() {
+
+    var notifications = new Notifications(MastoMain.getMastodonClient());
+
+    try {
+      Pageable<Notification> notificationPageable = notifications.getNotifications().execute();
+      return notificationPageable.getPart();
     } catch (Exception e) {
       e.printStackTrace();
       return null;

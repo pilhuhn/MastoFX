@@ -1,34 +1,64 @@
 
 package de.bsd.mastofx;
 
-import com.sys1yagi.mastodon4j.MastodonClient;
-import com.sys1yagi.mastodon4j.api.entity.Status;
-import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
-import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.google.gson.Gson;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import social.bigbone.MastodonClient;
+import social.bigbone.MastodonRequest;
+import social.bigbone.api.entity.Attachment;
+import social.bigbone.api.entity.Status;
+import social.bigbone.api.exception.BigboneRequestException;
+import social.bigbone.api.method.Media;
+import social.bigbone.api.method.Statuses;
 
 /**
  * @author hrupp
  */
-public class NewTootView {
+public class NewTootView extends TitledPane {
 
+  @FXML
+  public Label outcome;
+  @FXML public MenuButton vMenu;
+  @FXML public Button toot_button;
+  @FXML public Button uploadButton;
   private Scene scene;
   private long originalId;
+  private String replyToAccount;
 
-  public NewTootView() {
+  private String fileName;
+
+  private Status.Visibility visibility = Status.Visibility.Public;
+  private File uploadFile;
+
+
+  @FXML
+  public void initialize() {
+
+    // TODO this is not working as expected
+    //    see also tvCallback() below
+    var contentBinding = textarea.textProperty().isEmpty();
+    toot_button.disableProperty().isEqualTo(contentBinding);
 
   }
-
-  NewTootView(Scene scene) {
-
-    this.scene = scene;
-  }
-
 
   /*
-   * Callback from masto-box.fxml Toot-button
+   * Callback from newToot.fxml Toot-button
    */
   @FXML
   public void toot(javafx.event.ActionEvent event) {
@@ -36,6 +66,10 @@ public class NewTootView {
     System.out.println(textarea.getParagraphs());
 
     String text = textarea.getText();
+    if (text.isBlank()) {
+      outcome.setText("Not tooted, text is empty");
+      return;
+    }
 
     MastodonClient client = MastoMain.getMastodonClient();
 
@@ -45,18 +79,63 @@ public class NewTootView {
       if (originalId > 0) {
         inReplyToId = originalId;
       }
+
+      List<Long> mediaIds = null;
+      if (uploadFile != null) {
+        Media media = new Media(client);
+
+        RequestBody body = RequestBody.create(MediaType.parse("image/png"),
+                                              uploadFile);
+        MultipartBody.Part pFile = MultipartBody.Part.createFormData("file", uploadFile.getName(), body);
+        var mReq = media.postMedia(pFile);
+
+        Attachment uploadedFile = mReq.execute();
+
+
+//        RequestBody body = RequestBody.create(uploadFile,
+//                                              MediaType.parse("image/png")); // TODO otehr types?
+//        MultipartBody.Part pFile = MultipartBody.Part.create(body);
+//
+////        var mReq = media.postMedia(pFile);
+//
+//        MultipartBody.Builder builder = new MultipartBody.Builder();
+//        builder.addFormDataPart("file", "bla", body);
+//        builder.setType(MultipartBody.FORM);
+//        var foo = builder.build();
+//
+//        var mReq = new MastodonRequest<Attachment>(() ->
+//                        client.postRequestBody("api/v1/media", foo)
+//                    ,
+//                                                   it ->
+//
+//                        new Gson().fromJson(it, Attachment.class)
+//                    );
+//
+//
+//        Attachment uploadedFile = mReq.execute();
+
+        System.out.println(uploadedFile);
+        mediaIds = new ArrayList<>(1);
+        mediaIds.add(uploadedFile.getId());
+      }
+
+
       var req = statuses.postStatus(text,
                                     inReplyToId, // inReply
-                                    null, // mediaIds
+                                    mediaIds, // mediaIds
                                     false, // sensitive
                                     null, // Spoiler Text
-                                    Status.Visibility.Public
+                                    visibility
          );
+
+
 
       var res = req.execute();
       System.out.println("Posted with id " + res.getId());
-    } catch (Mastodon4jRequestException e) {
+      outcome.setText("Posted with id " + res.getId());
+    } catch (BigboneRequestException e) {
       e.printStackTrace();  // TODO: Customise this generated block
+      outcome.setText("Error: " + e.getMessage());
     }
 
   }
@@ -65,7 +144,40 @@ public class NewTootView {
   public TextArea textarea;
 
 
-  public void setInReplyTo(long originalId) {
+  public void setInReplyToId(long originalId) {
     this.originalId = originalId;
+  }
+
+  public void setInReplyToAccount(String replyToAccount) {
+    this.replyToAccount = replyToAccount;
+    textarea.setText(this.replyToAccount);
+  }
+
+  public void setVisibility(ActionEvent actionEvent) {
+
+    vMenu.setText(((MenuItem)actionEvent.getTarget()).getText());
+
+    switch ((String) (((MenuItem) actionEvent.getTarget()).getUserData())) {
+      case "PR" -> visibility = Status.Visibility.Private;
+      case "DI" -> visibility = Status.Visibility.Direct;
+      case "UN" -> visibility = Status.Visibility.Unlisted;
+      default -> visibility = Status.Visibility.Public;
+    }
+  }
+
+  public void tvCallback(KeyEvent keyEvent) {
+    toot_button.setDisable(textarea.getText().isEmpty());
+
+  }
+
+  public void uploadImage(ActionEvent actionEvent) {
+    FileChooser fc = new FileChooser();
+    File file = fc.showOpenDialog(uploadButton.getScene().getWindow());
+    if (file!=null) {
+
+      System.out.println(file.getAbsolutePath());
+    }
+    this.uploadFile = file;
+
   }
 }

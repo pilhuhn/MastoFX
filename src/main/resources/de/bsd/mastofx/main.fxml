@@ -51,10 +51,11 @@
           <items>
             <MenuItem mnemonicParsing="true" accelerator="N" onAction="#newToot" text="_New Toot" />
             <MenuItem mnemonicParsing="true" accelerator="R" text="_Refresh timeline" onAction="#showList"/>
+   <!--         <MenuItem mnemonicParsing="true" accelerator="B" text="Benachrichtigungen" onAction="#showNotifications"/> -->
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Preferences…" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" text="Quit" onAction="#exit" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
