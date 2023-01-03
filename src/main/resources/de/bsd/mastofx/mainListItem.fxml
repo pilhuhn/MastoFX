@@ -27,7 +27,7 @@
                         <Insets right="2.0" />
                      </padding>
                   </TextField>
-                  <TextField fx:id="reblogFrom" editable="false" />
+                  <TextField fx:id="reblogBy" editable="false" />
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">

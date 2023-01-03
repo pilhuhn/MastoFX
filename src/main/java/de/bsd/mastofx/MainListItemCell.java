@@ -22,7 +22,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -41,7 +40,7 @@ public class MainListItemCell extends ListCell<Status> {
     @FXML
     TextField fromField;
 
-    @FXML TextField reblogFrom;
+    @FXML TextField reblogBy;
 
     @FXML
     TextArea content;
@@ -77,19 +76,24 @@ public class MainListItemCell extends ListCell<Status> {
             }
         }
         content.setText(deHtml(item.getContent()));
-        fromField.setText(item.getAccount().getDisplayName() + " (" + item.getAccount().getAcct() + ")");
+
+        Status contentItem;
 
         if (item.getReblog() != null) { // isReblogged() is not reliable
             var reblogged = item.getReblog();
             content.setText(deHtml(reblogged.getContent()));
-            reblogFrom.setText(reblogged.getAccount().getDisplayName()+ " (" + reblogged.getAccount().getAcct() + ")" );
+            fromField.setText(reblogged.getAccount().getDisplayName()+ " (" + reblogged.getAccount().getAcct() + ")" );
+            reblogBy.setText(item.getAccount().getDisplayName() + " (" + item.getAccount().getAcct() + ")");
+            contentItem = reblogged;
         }
         else {
-            reblogFrom.setText(null);
+            reblogBy.setText(null);
+            fromField.setText(item.getAccount().getDisplayName() + " (" + item.getAccount().getAcct() + ")");
+            contentItem = item;
         }
 
-        if (!item.getMediaAttachments().isEmpty()) {
-            Attachment attachment = item.getMediaAttachments().get(0);
+        if (!contentItem.getMediaAttachments().isEmpty()) {
+            Attachment attachment = contentItem.getMediaAttachments().get(0);
             if (attachment.getType().equals("image")) {
                 Image image = new Image(attachment.getPreviewUrl(), true);
                 imageView.setImage(image);
