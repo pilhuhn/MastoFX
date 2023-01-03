@@ -80,8 +80,10 @@ public class NewTootView extends TitledPane {
       if (uploadFile != null) {
         Media media = new Media(client);
 
-        RequestBody body = RequestBody.create(MediaType.parse("image/png"),
-                                              uploadFile);
+
+        var mediaType = getMediaTypeFromFile(uploadFile);
+
+        RequestBody body = RequestBody.create(mediaType, uploadFile);
         MultipartBody.Part pFile = MultipartBody.Part.createFormData("file", uploadFile.getName(), body);
         var mReq = media.postMedia(pFile);
 
@@ -111,6 +113,22 @@ public class NewTootView extends TitledPane {
       outcome.setText("Error: " + e.getMessage());
     }
 
+  }
+
+  private MediaType getMediaTypeFromFile(File uploadFile) {
+    var i = uploadFile.getName().lastIndexOf('.');
+    var ending = uploadFile.getName().substring(i+1);
+    MediaType mediaType = switch (ending) {
+      case "png" ->
+        MediaType.get("image/png");
+      case "jpg", "jpeg" ->
+        MediaType.get("image/jpg");
+      case "gif" ->
+        MediaType.get("image/gif");
+      default ->
+        MediaType.get(ending);
+    };
+    return mediaType;
   }
 
   @FXML
