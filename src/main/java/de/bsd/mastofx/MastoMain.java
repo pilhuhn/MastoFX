@@ -15,7 +15,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-import okhttp3.OkHttpClient;
 import org.kordamp.bootstrapfx.BootstrapFX;
 import social.bigbone.MastodonClient;
 

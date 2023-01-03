@@ -1,7 +1,6 @@
 
 package de.bsd.mastofx;
 
-import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import social.bigbone.MastodonClient;
-import social.bigbone.MastodonRequest;
 import social.bigbone.api.entity.Attachment;
 import social.bigbone.api.entity.Status;
 import social.bigbone.api.exception.BigboneRequestException;
@@ -40,8 +38,6 @@ public class NewTootView extends TitledPane {
   private Scene scene;
   private long originalId;
   private String replyToAccount;
-
-  private String fileName;
 
   private Status.Visibility visibility = Status.Visibility.Public;
   private File uploadFile;
@@ -90,29 +86,6 @@ public class NewTootView extends TitledPane {
         var mReq = media.postMedia(pFile);
 
         Attachment uploadedFile = mReq.execute();
-
-
-//        RequestBody body = RequestBody.create(uploadFile,
-//                                              MediaType.parse("image/png")); // TODO otehr types?
-//        MultipartBody.Part pFile = MultipartBody.Part.create(body);
-//
-////        var mReq = media.postMedia(pFile);
-//
-//        MultipartBody.Builder builder = new MultipartBody.Builder();
-//        builder.addFormDataPart("file", "bla", body);
-//        builder.setType(MultipartBody.FORM);
-//        var foo = builder.build();
-//
-//        var mReq = new MastodonRequest<Attachment>(() ->
-//                        client.postRequestBody("api/v1/media", foo)
-//                    ,
-//                                                   it ->
-//
-//                        new Gson().fromJson(it, Attachment.class)
-//                    );
-//
-//
-//        Attachment uploadedFile = mReq.execute();
 
         System.out.println(uploadedFile);
         mediaIds = new ArrayList<>(1);
