@@ -129,7 +129,7 @@ public class MainView {
 
     try {
 
-      Pageable<Status> statuses = timelines.getHome().execute();
+      Pageable<Status> statuses = timelines.getHomeTimeline().execute();
 
       return statuses.getPart();
     } catch (Exception e) {

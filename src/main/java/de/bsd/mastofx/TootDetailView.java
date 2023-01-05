@@ -153,17 +153,17 @@ public class TootDetailView {
   public void raw(ActionEvent actionEvent) {
     System.out.print("=== raw for ");
     System.out.println(status.getId());
-    System.out.printf("Account %s , ( %s ),  %d \n" , status.getAccount().getAcct(),
+    System.out.printf("Account %s , ( %s ),  %s \n" , status.getAccount().getAcct(),
                       status.getAccount().getDisplayName(), status.getAccount().getId());
     System.out.println(status.getCreatedAt());
     if (status.getReblog() != null) {
       var re = status.getReblog();
       System.out.println("  --  reblogged from id " + re.getId());
-      System.out.printf("      Account %s , ( %s ),  %d \n" , re.getAccount().getAcct(),
+      System.out.printf("      Account %s , ( %s ),  %s \n" , re.getAccount().getAcct(),
                         re.getAccount().getDisplayName(), re.getAccount().getId());
       System.out.println("      " + re.getUri());
       re.getEmojis().forEach(x2 -> System.out.println("      " + x2));
-      re.getMediaAttachments().forEach(x1 -> System.out.printf("      %d %s %s %s %s \n", x1.getId(), x1.getType(),
+      re.getMediaAttachments().forEach(x1 -> System.out.printf("      %s %s %s %s %s \n", x1.getId(), x1.getType(),
                                                                        x1.getPreviewUrl(), x1.getTextUrl(), x1.getRemoteUrl()));
       re.getMentions().forEach(x -> System.out.println("      " + x.getUsername()));
       re.getTags().forEach(x -> System.out.println("      " + x.getName()));

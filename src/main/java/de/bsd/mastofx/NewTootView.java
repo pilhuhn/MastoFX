@@ -36,7 +36,7 @@ public class NewTootView extends TitledPane {
   @FXML public Button toot_button;
   @FXML public Button uploadButton;
   private Scene scene;
-  private long originalId;
+  private String originalId;
   private String replyToAccount;
 
   private Status.Visibility visibility = Status.Visibility.Public;
@@ -71,12 +71,12 @@ public class NewTootView extends TitledPane {
 
     Statuses statuses = new Statuses(client);
     try {
-      Long inReplyToId = null;
-      if (originalId > 0) {
+      String inReplyToId = null;
+      if (originalId != null) {
         inReplyToId = originalId;
       }
 
-      List<Long> mediaIds = null;
+      List<String> mediaIds = null;
       if (uploadFile != null) {
         Media media = new Media(client);
 
@@ -135,7 +135,7 @@ public class NewTootView extends TitledPane {
   public TextArea textarea;
 
 
-  public void setInReplyToId(long originalId) {
+  public void setInReplyToId(String originalId) {
     this.originalId = originalId;
   }
 
