@@ -2,7 +2,6 @@
 package de.bsd.mastofx;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,17 +10,13 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.kordamp.bootstrapfx.BootstrapFX;
 import social.bigbone.api.Pageable;
 import social.bigbone.api.entity.Notification;
 import social.bigbone.api.entity.Status;
-import social.bigbone.api.method.Notifications;
-import social.bigbone.api.method.Timelines;
 
 /**
  * @author hrupp
@@ -125,7 +120,7 @@ public class MainView {
 
   List<Status> getStatusesForTimeline() {
 
-    Timelines timelines = new Timelines(MastoMain.getMastodonClient());
+    var timelines = MastoMain.getMastodonClient().getTimelines();
 
     try {
 
@@ -140,7 +135,7 @@ public class MainView {
 
   List<Notification> getNotifications() {
 
-    var notifications = new Notifications(MastoMain.getMastodonClient());
+    var notifications = MastoMain.getMastodonClient().getNotifications();
 
     try {
       Pageable<Notification> notificationPageable = notifications.getNotifications().execute();

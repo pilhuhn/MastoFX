@@ -13,8 +13,7 @@ import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
 import social.bigbone.MastodonRequest;
 import social.bigbone.api.entity.Status;
-import social.bigbone.api.exception.BigboneRequestException;
-import social.bigbone.api.method.Statuses;
+import social.bigbone.api.exception.BigBoneRequestException;
 
 /**
  * @author hrupp
@@ -117,17 +116,17 @@ public class TootDetailView {
   }
 
   public void boost(ActionEvent actionEvent) {
-    Statuses st = new Statuses(MastoMain.getMastodonClient());
+    var st = MastoMain.getMastodonClient().getStatuses();
     try {
-      MastodonRequest<Status> req = st.postReblog(status.getId());
+      MastodonRequest<Status> req = st.reblogStatus(status.getId());
       req.execute();
-    } catch (BigboneRequestException e) {
+    } catch (BigBoneRequestException e) {
       e.printStackTrace();  // TODO: Customise this generated block
     }
   }
 
   public void fav(ActionEvent actionEvent) {
-    Statuses st = new Statuses(MastoMain.getMastodonClient());
+    var st = MastoMain.getMastodonClient().getStatuses();
     try {
 
       Status toBeFavD = status;
@@ -137,14 +136,14 @@ public class TootDetailView {
 
       MastodonRequest<Status> req;
       if (toBeFavD.isFavourited()) {
-        req = st.postUnfavourite(toBeFavD.getId());
+        req = st.unfavouriteStatus(toBeFavD.getId());
       } else {
-        req = st.postFavourite(toBeFavD.getId());
+        req = st.favouriteStatus(toBeFavD.getId());
       }
       Status res = req.execute();
       setFavButtonState(res);
 
-    } catch (BigboneRequestException e) {
+    } catch (BigBoneRequestException e) {
       e.printStackTrace();  // TODO: Customise this generated block
     }
 

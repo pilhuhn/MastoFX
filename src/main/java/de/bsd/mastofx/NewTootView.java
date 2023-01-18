@@ -16,14 +16,12 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import social.bigbone.MastodonClient;
 import social.bigbone.api.entity.Attachment;
 import social.bigbone.api.entity.Status;
-import social.bigbone.api.exception.BigboneRequestException;
-import social.bigbone.api.method.Media;
-import social.bigbone.api.method.Statuses;
+import social.bigbone.api.exception.BigBoneRequestException;
+import social.bigbone.api.method.MediaMethods;
+import social.bigbone.api.method.StatusesMethods;
 
 /**
  * @author hrupp
@@ -69,7 +67,7 @@ public class NewTootView extends TitledPane {
 
     MastodonClient client = MastoMain.getMastodonClient();
 
-    Statuses statuses = new Statuses(client);
+    StatusesMethods statuses = client.getStatuses();
     try {
       String inReplyToId = null;
       if (originalId != null) {
@@ -78,18 +76,13 @@ public class NewTootView extends TitledPane {
 
       List<String> mediaIds = null;
       if (uploadFile != null) {
-        Media media = new Media(client);
-
+        MediaMethods media = client.getMedia();
 
         var mediaType = getMediaTypeFromFile(uploadFile);
-
-        RequestBody body = RequestBody.create(mediaType, uploadFile);
-        MultipartBody.Part pFile = MultipartBody.Part.createFormData("file", uploadFile.getName(), body);
-        var mReq = media.postMedia(pFile);
+        var mReq = media.uploadMedia(uploadFile, mediaType.toString());
 
         Attachment uploadedFile = mReq.execute();
 
-        System.out.println(uploadedFile);
         mediaIds = new ArrayList<>(1);
         mediaIds.add(uploadedFile.getId());
       }
@@ -108,7 +101,7 @@ public class NewTootView extends TitledPane {
       var res = req.execute();
       System.out.println("Posted with id " + res.getId());
       outcome.setText("Posted with id " + res.getId());
-    } catch (BigboneRequestException e) {
+    } catch (BigBoneRequestException e) {
       e.printStackTrace();  // TODO: Customise this generated block
       outcome.setText("Error: " + e.getMessage());
     }
