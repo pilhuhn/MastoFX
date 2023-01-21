@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.text.Text?>
 <AnchorPane fx:id="listItem" maxHeight="-Infinity" maxWidth="-Infinity"
             minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0"
             prefWidth="600.0" xmlns="http://javafx.com/javafx/19"
@@ -19,21 +20,18 @@
          <children>
             <HBox prefHeight="52.0" prefWidth="596.0">
                <children>
-                  <TextField fx:id="fromField" editable="false" prefHeight="25.0" prefWidth="334.0">
+                  <Text fx:id="fromField"  mouseTransparent="true" focusTraversable="true">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
-                     <padding>
-                        <Insets right="2.0" />
-                     </padding>
-                  </TextField>
-                  <TextField fx:id="reblogBy" editable="false" />
+                  </Text>
+                  <Text fx:id="reblogBy" mouseTransparent="true" focusTraversable="true"/>
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <TextArea fx:id="content" editable="false" prefHeight="93.0" prefWidth="425.0" wrapText="true"/>
-                  <ImageView fx:id="imageView" fitHeight="94.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" />
+                  <TextArea fx:id="content" editable="false" prefHeight="93.0" prefWidth="425.0" wrapText="true" mouseTransparent="true"/>
+                  <ImageView fx:id="imageView" fitHeight="94.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" mouseTransparent="true" focusTraversable="true"/>
                </children>
             </HBox>
          </children>

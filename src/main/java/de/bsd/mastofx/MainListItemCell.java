@@ -21,10 +21,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import org.jsoup.Jsoup;
 import social.bigbone.api.entity.Attachment;
 import social.bigbone.api.entity.Status;
@@ -38,9 +38,9 @@ public class MainListItemCell extends ListCell<Status> {
     AnchorPane listItem;
 
     @FXML
-    TextField fromField;
+    Text fromField;
 
-    @FXML TextField reblogBy;
+    @FXML Text reblogBy;
 
     @FXML
     TextArea content;
@@ -83,7 +83,7 @@ public class MainListItemCell extends ListCell<Status> {
             var reblogged = item.getReblog();
             content.setText(deHtml(reblogged.getContent()));
             fromField.setText(reblogged.getAccount().getDisplayName()+ " (" + reblogged.getAccount().getAcct() + ")" );
-            reblogBy.setText(item.getAccount().getDisplayName() + " (" + item.getAccount().getAcct() + ")");
+            reblogBy.setText(" via " + item.getAccount().getDisplayName() + " (" + item.getAccount().getAcct() + ")");
             contentItem = reblogged;
         }
         else {

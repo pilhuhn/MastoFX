@@ -33,7 +33,6 @@ public class NewTootView extends TitledPane {
   @FXML public MenuButton vMenu;
   @FXML public Button toot_button;
   @FXML public Button uploadButton;
-  private Scene scene;
   private String originalId;
   private String replyToAccount;
 
@@ -48,6 +47,16 @@ public class NewTootView extends TitledPane {
     //    see also tvCallback() below
     var contentBinding = textarea.textProperty().isEmpty();
     toot_button.disableProperty().isEqualTo(contentBinding);
+
+    toot_button.getStyleClass().add("btn");
+    toot_button.getStyleClass().add("btn-primary");
+
+    uploadButton.getStyleClass().add("btn");
+    uploadButton.getStyleClass().add("btn-default");
+
+    vMenu.getStyleClass().add("btn-group-vertical");
+    vMenu.getStyleClass().add("btn");
+
 
   }
 
