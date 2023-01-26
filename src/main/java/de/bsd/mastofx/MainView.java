@@ -120,7 +120,7 @@ public class MainView {
 
   List<Status> getStatusesForTimeline() {
 
-    var timelines = MastoMain.getMastodonClient().getTimelines();
+    var timelines = MastoMain.getMastodonClient().timelines();
 
     try {
 
@@ -135,7 +135,7 @@ public class MainView {
 
   List<Notification> getNotifications() {
 
-    var notifications = MastoMain.getMastodonClient().getNotifications();
+    var notifications = MastoMain.getMastodonClient().notifications();
 
     try {
       Pageable<Notification> notificationPageable = notifications.getNotifications().execute();

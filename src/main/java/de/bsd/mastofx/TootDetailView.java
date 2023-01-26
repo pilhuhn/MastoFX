@@ -73,7 +73,7 @@ public class TootDetailView {
 
     Label label = new Label("Id");
     theGrid.add(label, 0, 0);
-    Text text = new Text(String.valueOf(status.getId()));
+    Text text = new Text(status.getId());
     theGrid.add(text, 1, 0);
 
     label = new Label("From");
@@ -116,7 +116,7 @@ public class TootDetailView {
   }
 
   public void boost(ActionEvent actionEvent) {
-    var st = MastoMain.getMastodonClient().getStatuses();
+    var st = MastoMain.getMastodonClient().statuses();
     try {
       MastodonRequest<Status> req = st.reblogStatus(status.getId());
       req.execute();
@@ -126,7 +126,7 @@ public class TootDetailView {
   }
 
   public void fav(ActionEvent actionEvent) {
-    var st = MastoMain.getMastodonClient().getStatuses();
+    var st = MastoMain.getMastodonClient().statuses();
     try {
 
       Status toBeFavD = status;

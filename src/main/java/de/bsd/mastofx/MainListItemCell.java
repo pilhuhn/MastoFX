@@ -26,7 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import org.jsoup.Jsoup;
-import social.bigbone.api.entity.Attachment;
+import social.bigbone.api.entity.MediaAttachment;
 import social.bigbone.api.entity.Status;
 
 /**
@@ -93,7 +93,7 @@ public class MainListItemCell extends ListCell<Status> {
         }
 
         if (!contentItem.getMediaAttachments().isEmpty()) {
-            Attachment attachment = contentItem.getMediaAttachments().get(0);
+            MediaAttachment attachment = contentItem.getMediaAttachments().get(0);
             if (attachment.getType().equals("image")) {
                 Image image = new Image(attachment.getPreviewUrl(), true);
                 imageView.setImage(image);

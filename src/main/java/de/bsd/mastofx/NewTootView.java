@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -17,11 +16,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import okhttp3.MediaType;
 import social.bigbone.MastodonClient;
-import social.bigbone.api.entity.Attachment;
+import social.bigbone.api.entity.MediaAttachment;
 import social.bigbone.api.entity.Status;
 import social.bigbone.api.exception.BigBoneRequestException;
 import social.bigbone.api.method.MediaMethods;
-import social.bigbone.api.method.StatusesMethods;
+import social.bigbone.api.method.StatusMethods;
 
 /**
  * @author hrupp
@@ -76,7 +75,7 @@ public class NewTootView extends TitledPane {
 
     MastodonClient client = MastoMain.getMastodonClient();
 
-    StatusesMethods statuses = client.getStatuses();
+    StatusMethods statuses = client.statuses();
     try {
       String inReplyToId = null;
       if (originalId != null) {
@@ -85,12 +84,12 @@ public class NewTootView extends TitledPane {
 
       List<String> mediaIds = null;
       if (uploadFile != null) {
-        MediaMethods media = client.getMedia();
+        MediaMethods media = client.media();
 
         var mediaType = getMediaTypeFromFile(uploadFile);
         var mReq = media.uploadMedia(uploadFile, mediaType.toString());
 
-        Attachment uploadedFile = mReq.execute();
+        MediaAttachment uploadedFile = mReq.execute();
 
         mediaIds = new ArrayList<>(1);
         mediaIds.add(uploadedFile.getId());
