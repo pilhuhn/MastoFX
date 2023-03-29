@@ -27,11 +27,15 @@ public class TootDetailView {
   public Button boostButton;
   @FXML
   public Button favButton;
+
+  @FXML
+  public Button replyButton;
   @FXML
   GridPane theGrid;
 
 
   private Status status;
+  private Server server;
 
   public void reply(ActionEvent actionEvent) {
     System.out.println(actionEvent);
@@ -50,6 +54,7 @@ public class TootDetailView {
     stage.setScene(sc);
 
     NewTootView controller = (NewTootView) tac.controller;
+    controller.setServer(server);
     controller.setInReplyToId(status.getId());
     String replyToAccount = "@" + status.getAccount().getAcct();
     if (status.getReblog() != null) {
@@ -116,7 +121,7 @@ public class TootDetailView {
   }
 
   public void boost(ActionEvent actionEvent) {
-    var st = MastoMain.getMastodonClient().statuses();
+    var st = server.client.statuses();
     try {
       MastodonRequest<Status> req = st.reblogStatus(status.getId());
       req.execute();
@@ -126,13 +131,26 @@ public class TootDetailView {
   }
 
   public void fav(ActionEvent actionEvent) {
-    var st = MastoMain.getMastodonClient().statuses();
+
+    var ser = !server.isAnonymous() ? server : MastoMain.getDefaultServer();
+    var st = ser.client.statuses();
+
     try {
 
       Status toBeFavD = status;
       if (status.getReblog() != null) {
         toBeFavD = status.getReblog();
       }
+
+//      String query = "type=statuses&account_id=" + toBeFavD.getAccount().getId() +
+//        "&max_id=" + toBeFavD.getId() +
+//        "&min_id=" + (Long.parseLong(toBeFavD.getId()) - 1);
+      String query = "type=statuses&url=" +toBeFavD.getUri();
+      MastodonRequest r =
+        ser.client.search().searchContent(
+          query
+        );
+      Object result = r.execute();
 
       MastodonRequest<Status> req;
       if (toBeFavD.isFavourited()) {
@@ -179,9 +197,14 @@ public class TootDetailView {
       System.out.println(status.getInReplyToAccountId());
     }
     status.getEmojis().forEach(x2 -> System.out.println("      " + x2));
-    status.getMediaAttachments().forEach(x1 -> System.out.printf("%d %s %s %s %s \n", x1.getId(), x1.getType(),
+    status.getMediaAttachments().forEach(x1 -> System.out.printf("%s %s %s %s %s \n", x1.getId(), x1.getType(),
                                                                  x1.getPreviewUrl(), x1.getTextUrl(), x1.getRemoteUrl()));
     status.getMentions().forEach(x -> System.out.println(x.getUsername()));
     status.getTags().forEach(x -> System.out.println(x.getName()));
+  }
+
+  public void setServer(Server server) {
+
+    this.server = server;
   }
 }

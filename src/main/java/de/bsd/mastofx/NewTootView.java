@@ -37,6 +37,7 @@ public class NewTootView extends TitledPane {
 
   private Status.Visibility visibility = Status.Visibility.Public;
   private File uploadFile;
+  private Server server;
 
 
   @FXML
@@ -63,7 +64,7 @@ public class NewTootView extends TitledPane {
    * Callback from newToot.fxml Toot-button
    */
   @FXML
-  public void toot(javafx.event.ActionEvent event) {
+  public void toot(ActionEvent event) {
     System.out.println(event);
     System.out.println(textarea.getParagraphs());
 
@@ -73,7 +74,8 @@ public class NewTootView extends TitledPane {
       return;
     }
 
-    MastodonClient client = MastoMain.getMastodonClient();
+
+    MastodonClient client = getServerClient();
 
     StatusMethods statuses = client.statuses();
     try {
@@ -97,11 +99,10 @@ public class NewTootView extends TitledPane {
 
 
       var req = statuses.postStatus(text,
+                                    visibility,
                                     inReplyToId, // inReply
-                                    mediaIds, // mediaIds
-                                    false, // sensitive
-                                    null, // Spoiler Text
-                                    visibility
+                                    mediaIds // mediaIds
+
          );
 
 
@@ -171,5 +172,16 @@ public class NewTootView extends TitledPane {
     }
     this.uploadFile = file;
 
+  }
+
+  public void setServer(Server server) {
+    this.server = server;
+  }
+
+  MastodonClient getServerClient() {
+    if (this.server != null && !this.server.isAnonymous()) {
+      return this.server.client;
+    }
+    return MastoMain.getDefaultServer().client;
   }
 }

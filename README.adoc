@@ -8,15 +8,32 @@ there is no source code available for it.
 
 == Using
 
-To use it, you need to go to your Mastodon account and in the developer
-section get an access token. This and the server name needs to go into
-a file in your home directory, called `.mastoFx.properties`
+To use it, you need to list your Mastodon servers in a file in your home directory, called `.mastoFx.json`.
+If you want to use a server with authentication (where you can also post new statuses),
+you need to go to your Mastodon account and in the developer
+section get an access token.
 
-.Example ~/.mastoFx.properties file
+Below is an example of the file with two servers listed.
+
+
+.Example ~/.mastoFx.json file
+[source,json]
 ----
-server=mastodon.social
-token=HulaLulaToken
+[
+  {
+   "name": "mastodon.social",  <1>
+   "token": "HulaToken",
+   "description": "Home server"
+  },
+
+  {
+    "name": "ijug.social",  <2>
+    "description": "Server without auth, only read local timelines from"
+  }
+]
 ----
+<1> This server has a Token, so you can also post to it
+<2> This server has no Token. MastoFX will show the local timeline of it only
 
 Then on the command line run `mvn javafx:run`
 

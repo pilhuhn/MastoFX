@@ -15,8 +15,10 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
 import social.bigbone.api.Pageable;
+import social.bigbone.api.Range;
 import social.bigbone.api.entity.Notification;
 import social.bigbone.api.entity.Status;
+import social.bigbone.api.method.TimelineMethods;
 
 /**
  * @author hrupp
@@ -25,6 +27,7 @@ public class MainView {
 
   @FXML
   public ListView tootListView;
+  private Server server;
 
 
   public void showList() {
@@ -63,6 +66,7 @@ public class MainView {
     Scene sc = new Scene(pac.parent, 500,300);
 
     TootDetailView controller = (TootDetailView) pac.controller;
+    controller.setServer(server);
     controller.setStatus(item);
     controller.display();
 
@@ -99,6 +103,10 @@ public class MainView {
     System.exit(0);
   }
 
+  public void setServer(Server server) {
+    this.server = server;
+  }
+
 
   class NotificationTextFieldListCell extends TextFieldListCell<Notification> {
     public NotificationTextFieldListCell() {
@@ -120,11 +128,17 @@ public class MainView {
 
   List<Status> getStatusesForTimeline() {
 
-    var timelines = MastoMain.getMastodonClient().timelines();
+    var timelines = server.client.timelines();
 
     try {
 
-      Pageable<Status> statuses = timelines.getHomeTimeline().execute();
+      Pageable<Status> statuses;
+      if (server.isAnonymous()) {
+        Range defaultRange = new Range();
+        statuses = timelines.getPublicTimeline(TimelineMethods.StatusOrigin.LOCAL, defaultRange).execute();
+      } else {
+        statuses = timelines.getHomeTimeline().execute();
+      }
 
       return statuses.getPart();
     } catch (Exception e) {
@@ -135,7 +149,7 @@ public class MainView {
 
   List<Notification> getNotifications() {
 
-    var notifications = MastoMain.getMastodonClient().notifications();
+    var notifications = server.client.notifications();
 
     try {
       Pageable<Notification> notificationPageable = notifications.getNotifications().execute();

@@ -39,7 +39,7 @@
               <items>
                   <Button fx:id="boostButton" mnemonicParsing="false" onAction="#boost" text="Boost" />
                   <Button fx:id="favButton" mnemonicParsing="false" onAction="#fav" text="Fav" />
-                <Button mnemonicParsing="false" onAction="#reply" text="Reply" />
+                <Button fx:id="replyButton" mnemonicParsing="false" onAction="#reply" text="Reply" />
                 <Button alignment="BASELINE_RIGHT" onAction="#raw" text="dumpRaw" />
               </items>
             </ToolBar>
